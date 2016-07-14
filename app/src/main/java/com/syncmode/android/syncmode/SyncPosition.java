@@ -14,6 +14,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.syncmode.android.persistence.DatabaseMenager;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,6 +22,8 @@ import java.util.TimerTask;
 public class SyncPosition extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleApiClient mClienteApi;
+    private DatabaseMenager database;
+    private static int timeSync = 300000;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -32,8 +35,7 @@ public class SyncPosition extends Service implements GoogleApiClient.ConnectionC
 
     @Override
     public void onCreate() {
-
-
+        database = new DatabaseMenager(getApplicationContext());
 
         Log.i("SERVIÇO", "Serviço START");
 
@@ -41,10 +43,21 @@ public class SyncPosition extends Service implements GoogleApiClient.ConnectionC
         timer.schedule(new TimerTask() {
             public void run() {
                 getLocation();
+                verifyTime();
             }
-        }, 0, 300000);
+        }, 0, timeSync);
 
         super.onCreate();
+    }
+
+    public void verifyTime(){
+        try{
+            Log.e("teste", "funciona");
+            //int time = Integer.parseInt(database.getTimeSync());
+            //SyncPosition.timeSync = time;
+        }catch(Exception ex){
+            Log.e("ERROR PARSE", ex.getMessage());
+        }
     }
 
     @Override

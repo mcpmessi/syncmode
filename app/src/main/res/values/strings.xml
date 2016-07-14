@@ -5,16 +5,6 @@
     <!-- Tempos disponiveis para sincronização -->
 
     <string-array name="sync_times">
-        <item>1 minuto</item>
-        <item>5 minutos</item>
-        <item>10 minutos</item>
-        <item>15 minutos</item>
-        <item>20 minutos</item>
-        <item>30 minutos</item>
-        <item>60 minutos</item>
-    </string-array>
-
-    <string-array name="sync_times_values">
         <item>1</item>
         <item>5</item>
         <item>10</item>

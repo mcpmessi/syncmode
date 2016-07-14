@@ -10,11 +10,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.syncmode.android.persistence.Database;
+import com.syncmode.android.persistence.DatabaseMenager;
 
 public class MainSync extends AppCompatActivity {
 
@@ -23,8 +26,7 @@ public class MainSync extends AppCompatActivity {
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
 
-    private Database database;
-    private SQLiteDatabase db;
+    private DatabaseMenager database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,25 +55,12 @@ public class MainSync extends AppCompatActivity {
      * @return void
      **/
     private void initComponent() {
-        database = new Database(this);
-        db = database.getWritableDatabase();
+        database = new DatabaseMenager(this);
 
         final Spinner sp_times = (Spinner) findViewById(R.id.sp_sync_times);
         sp_times.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String item = sp_times.getSelectedItem().toString();
-
-                ContentValues c = new ContentValues();
-                c.put("time", item);
-
-                db.update("time_sync", c, "",null);
-
-                Log.i("OBJECT SELECTED::", item);
-
-                printResult();
-
-                //foi comitado
             }
 
             @Override
@@ -79,14 +68,31 @@ public class MainSync extends AppCompatActivity {
 
             }
         });
+
+        final Button btn_salvar = (Button) findViewById(R.id.bt_salvar);
+        btn_salvar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String item = sp_times.getSelectedItem().toString();
+
+                if(item==null){
+                    Log.i("ERRO item NULL::", "O item não foi selecionado");
+                    Toast.makeText(getBaseContext(),"O item não foi selecionado" , Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(database.setConfigTimeSync(item)>0){
+                    Log.i("btn_salvar:::", "Configuração de atualização atualizada com sucesso! >>"+item);
+                    Toast.makeText(getBaseContext(),"Configuração de atualização atualizada com sucesso para "+item , Toast.LENGTH_SHORT).show();
+                }else{
+                    Log.e("btn_salvar:::", "Erro ao salvar as configurações. >>"+item);
+
+                }
+                Log.i("OBJECT SELECTED::", item);
+            }
+        });
     }
 
-    private void printResult(){
-        Cursor c = db.query("time_sync", new String[]{"time"}, null, null, null, null, null);
-        while(c.moveToNext()){
-            Log.e("Config::: ", c.getString(0));
-        }
-    }
 
     synchronized void createService() {
         startService(new Intent(this, SyncPosition.class));

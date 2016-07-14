@@ -34,6 +34,7 @@ public class Database extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         database = db;
         db.execSQL(CREATE_DATABASE);
+        db.execSQL("insert into time_sync (time) values(\"5\")");
     }
 
     @Override
