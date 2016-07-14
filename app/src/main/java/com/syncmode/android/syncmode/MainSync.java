@@ -95,7 +95,6 @@ public class MainSync extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     @Override
