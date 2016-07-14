@@ -27,6 +27,7 @@ public class MainSync extends AppCompatActivity {
      */
 
     private DatabaseMenager database;
+    public static int timeSync = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,8 @@ public class MainSync extends AppCompatActivity {
      **/
     private void initComponent() {
         database = new DatabaseMenager(this);
+        //inicializar o time sync
+        timeSync = Integer.parseInt(database.getTimeSync());
 
         final Spinner sp_times = (Spinner) findViewById(R.id.sp_sync_times);
         sp_times.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -83,6 +86,7 @@ public class MainSync extends AppCompatActivity {
 
                 if(database.setConfigTimeSync(item)>0){
                     Log.i("btn_salvar:::", "Configuração de atualização atualizada com sucesso! >>"+item);
+                    timeSync = Integer.parseInt(database.getTimeSync());
                     Toast.makeText(getBaseContext(),"Configuração de atualização atualizada com sucesso para "+item , Toast.LENGTH_SHORT).show();
                 }else{
                     Log.e("btn_salvar:::", "Erro ao salvar as configurações. >>"+item);

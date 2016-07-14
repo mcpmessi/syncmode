@@ -1,6 +1,5 @@
 package com.syncmode.android.syncmode;
 
-import android.app.Dialog;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,7 +10,6 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.syncmode.android.persistence.DatabaseMenager;
@@ -23,19 +21,18 @@ public class SyncPosition extends Service implements GoogleApiClient.ConnectionC
 
     private GoogleApiClient mClienteApi;
     private DatabaseMenager database;
-    private static int timeSync = 300000;
 
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
 
-
     }
 
     @Override
     public void onCreate() {
         database = new DatabaseMenager(getApplicationContext());
+        super.onCreate();
 
         Log.i("SERVIÇO", "Serviço START");
 
@@ -44,10 +41,12 @@ public class SyncPosition extends Service implements GoogleApiClient.ConnectionC
             public void run() {
                 getLocation();
                 verifyTime();
-            }
-        }, 0, timeSync);
 
-        super.onCreate();
+            }
+        }, 0, (MainSync.timeSync * 60) * 1000);
+
+
+
     }
 
     public void verifyTime(){
