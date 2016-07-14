@@ -70,6 +70,8 @@ public class MainSync extends AppCompatActivity {
                 Log.i("OBJECT SELECTED::", item);
 
                 printResult();
+
+                //foi comitado
             }
 
             @Override
