@@ -1,23 +1,24 @@
 package com.syncmode.android.syncmode;
 
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.syncmode.android.persistence.Database;
+import com.syncmode.android.custom.TimeSyncValues;
 import com.syncmode.android.persistence.DatabaseMenager;
+
+import java.util.ArrayList;
 
 public class MainSync extends AppCompatActivity {
 
@@ -28,6 +29,7 @@ public class MainSync extends AppCompatActivity {
 
     private DatabaseMenager database;
     public static int timeSync = 3;
+    private SpinnerAdapter spinerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class MainSync extends AppCompatActivity {
 
         initComponent();
         createService();
+
     }
 
     /**
@@ -60,10 +63,19 @@ public class MainSync extends AppCompatActivity {
         //inicializar o time sync
         timeSync = Integer.parseInt(database.getTimeSync());
 
+
         final Spinner sp_times = (Spinner) findViewById(R.id.sp_sync_times);
+        ArrayList<TimeSyncValues> values = initAdapter();
+
+        spinerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, values);
+
+        sp_times.setAdapter(spinerAdapter);
+
+
         sp_times.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
             }
 
             @Override
@@ -76,7 +88,9 @@ public class MainSync extends AppCompatActivity {
         btn_salvar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String item = sp_times.getSelectedItem().toString();
+                int position = sp_times.getSelectedItemPosition();
+
+                TimeSyncValues item = (TimeSyncValues)spinerAdapter.getItem(position);
 
                 if(item==null){
                     Log.i("ERRO item NULL::", "O item não foi selecionado");
@@ -84,15 +98,16 @@ public class MainSync extends AppCompatActivity {
                     return;
                 }
 
-                if(database.setConfigTimeSync(item)>0){
+
+                if(database.setConfigTimeSync(item.getId()+"")>0){
                     Log.i("btn_salvar:::", "Configuração de atualização atualizada com sucesso! >>"+item);
                     timeSync = Integer.parseInt(database.getTimeSync());
                     Toast.makeText(getBaseContext(),"Configuração de atualização atualizada com sucesso para "+item , Toast.LENGTH_SHORT).show();
                 }else{
-                    Log.e("btn_salvar:::", "Erro ao salvar as configurações. >>"+item);
+                    Log.e("btn_salvar:::", "Erro ao salvar as configurações. >>"+item.getId());
 
                 }
-                Log.i("OBJECT SELECTED::", item);
+                Log.i("OBJECT SELECTED::", item.getId()+"");
             }
         });
     }
@@ -110,5 +125,17 @@ public class MainSync extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    private ArrayList<TimeSyncValues> initAdapter(){
+        ArrayList<TimeSyncValues> t = new ArrayList<>();
+        for(int i=1; i<8; i++){
+            TimeSyncValues v = new TimeSyncValues();
+            v.setName((i*5)+" minutos");
+            v.setId(i*5);
+            t.add(v);
+        }
+
+        return t;
     }
 }
