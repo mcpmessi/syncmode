@@ -51,6 +51,7 @@ public class MainSync extends AppCompatActivity {
 
         initComponent();
         createService();
+        startServer();
 
     }
 
@@ -115,6 +116,10 @@ public class MainSync extends AppCompatActivity {
 
     synchronized void createService() {
         startService(new Intent(this, SyncPosition.class));
+    }
+
+    synchronized void startServer() {
+        startService(new Intent(this, SyncServer.class));
     }
 
     @Override
