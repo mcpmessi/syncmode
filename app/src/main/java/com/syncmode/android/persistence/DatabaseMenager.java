@@ -20,7 +20,10 @@ public class DatabaseMenager{
         this.db = database.getWritableDatabase();
 
     }
-
+    /**
+     * Obter o tempo de atualização da posição GPS
+     * @return <i style='color:blue'>String</i> - Tempo de sincronização ou <i style='color:blue'>null</i> caso esta configuração não esteja setada.
+     * */
     public String getTimeSync(){
         try{
             Cursor c = db.rawQuery("select time from time_sync", null);
@@ -32,14 +35,12 @@ public class DatabaseMenager{
         }catch(Exception ex){
             Log.e("getConfigSyncTimeId", ex.getMessage());
         }
-
         return null;
     }
 
     public int getConfigSyncID(){
         try{
             Cursor c = db.rawQuery("select * from time_sync", null);
-
             if(c!=null && c.moveToNext()){
                 Log.e("Config::: ", c.getString(c.getColumnIndex("time")));
                 return c.getInt(c.getColumnIndex("id"));
